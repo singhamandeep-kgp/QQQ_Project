@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import gc
 
-# Default option expiry dates (kept for backward compatibility)
+# Default option expiry dates 
 DEFAULT_EXPIRY_DATES = [
     pd.Timestamp('2020-01-17'),
     pd.Timestamp('2020-02-21'),
@@ -196,8 +196,6 @@ class TimeFeatures:
             daily = self.add_calendarEffectFeatures(daily)
         return daily
 
-
-# Backwards-compatible convenience function
 def build_time_features(
     QQQ: pd.DataFrame,
     expiry_dates: list | None = None,
@@ -206,11 +204,7 @@ def build_time_features(
     compute_realised: bool = True,
     compute_calendar: bool = True,
 ) -> pd.DataFrame:
-    """Convenience wrapper matching the older procedural style.
 
-    Example:
-        daily = build_time_features(QQQ)
-    """
     tf = TimeFeatures(expiry_dates=expiry_dates, vol_windows=vol_windows, annualisation=annualisation)
     return tf.build_features(QQQ, compute_realised=compute_realised, compute_calendar=compute_calendar)
 
