@@ -29,11 +29,11 @@ def check_data_completeness(QQQ: pd.DataFrame) -> pd.DataFrame:
     underlying_bad = ((QQQ["spotPrice"].isna()) | (QQQ["spotPrice"] <= 0))
     print("Percent observations with NA or negative underlying prices %:", 100 * underlying_bad.mean())
 
-    print("Percent observations with weird delta not falling in expected bounds %:", 100 * ((QQQ['callDelta'].between(0, 1)) | (QQQ['putDelta'].between(-1, 0))).mean())
+    print("Percent observations with weird delta not falling in expected bounds %:", 100 * (~(QQQ['callDelta'].between(0, 1)) | (~QQQ['putDelta'].between(-1, 0))).mean())
     
     print("Percent observations with negative DTE %:", 100 * (QQQ['dte'] < 0).mean())
 
     del liq_bad, greeks_bad, price_bad, underlying_bad
     gc.collect()
 
-    return QQQ
+    return None
