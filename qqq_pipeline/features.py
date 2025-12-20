@@ -209,6 +209,7 @@ class volume_OI_features():
         
         self.dte_buckets = dte_buckets
         self.dte_buckets_labels = dte_buckets_labels
+        self.machine_error = 1e-8
 
     
     def calc_volume_oi(self, QQQ: pd.DataFrame) -> pd.DataFrame: 
@@ -276,6 +277,23 @@ class volume_OI_features():
             for metric, dte, delta in daily_put_agg.columns]
         
         daily_put_agg = daily_put_agg.reset_index()
+
+        for dte in self.dte_buckets_labels:
+            for delta in ["itm", "atm", "otm"]:
+
+                # Volume ratios
+                put_col = f"put_notvol_{dte}_{delta}"
+                call_col = f"call_notvol_{dte}_{delta}"
+                daily_call_agg[f"pc_ratio_notional_vol_{dte}_{delta}"] = (
+                        daily_put_agg[put_col] / (daily_call_agg[call_col] + self.machine_error)
+                    )
+
+                # OI ratios
+                put_col = f"put_notoi_{dte}_{delta}"
+                call_col = f"call_notoi_{dte}_{delta}"
+                daily_call_agg[f"pc_ratio_notional_oi_{dte}_{delta}"] = (
+                        daily_put_agg[put_col] / (daily_call_agg[call_col] + self.machine_error)
+                    )
 
         intermediate = pd.merge(daily_put_agg, daily_call_agg, on='tradeDate', how='inner')
         daily = pd.merge(daily, intermediate, on='tradeDate', how='inner')
