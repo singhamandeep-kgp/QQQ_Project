@@ -324,7 +324,7 @@ def build_volume_oi_features(QQQ: pd.DataFrame,
 class vol_features():
 
     def __init__(self, 
-                 target_dtes: list = [7,30,90]) -> None:
+                 target_dtes: list = [7,30]) -> None:
         
         self.target_dtes = target_dtes
 
@@ -365,7 +365,7 @@ class vol_features():
 
 def build_vol_features(QQQ: pd.DataFrame,
                        daily: pd.DataFrame, 
-                       target_dtes = [7]) -> pd.DataFrame:
+                       target_dtes = [7, 30]) -> pd.DataFrame:
 
     vol = vol_features(target_dtes = target_dtes)
     return vol.build_features(QQQ = QQQ, daily = daily)

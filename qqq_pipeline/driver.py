@@ -122,15 +122,8 @@ if __name__ == "__main__":
         # Run the main pipeline
         QQQ, daily = main()
         
-        # Optional: run additional tests
-        print("\n" + "=" * 80)
-        print("Available for further testing:")
-        print("  - inspect_data(QQQ, daily)")
-        print("  - test_iv_calculation(QQQ, daily, target_dte=30)")
-        print("=" * 80)
-        
     except Exception as e:
-        print("\n❌ Error during pipeline execution:")
+        print("\n Error during pipeline execution:")
         print(f"   {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()

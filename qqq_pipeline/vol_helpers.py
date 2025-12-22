@@ -291,6 +291,8 @@ def find_atm_straddle_iv(
 				except Exception:
 					pass
 	
+	daily = daily.drop(columns=[f'call_iv_{d}d_lower', f'put_iv_{d}d_lower', f'call_iv_{d}d_upper', f'put_iv_{d}d_upper'], errors='ignore')
+	
 	gc.collect()
 
 	return daily
