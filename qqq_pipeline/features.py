@@ -1,3 +1,4 @@
+from vol_helpers import find_atm_straddle_iv
 import numpy as np
 import pandas as pd
 import gc
@@ -319,3 +320,53 @@ def build_volume_oi_features(QQQ: pd.DataFrame,
 
     voi = volume_OI_features(dte_buckets = dte_buckets, dte_buckets_labels = dte_buckets_labels)
     return voi.build_features(QQQ = QQQ, daily = daily)
+
+class vol_features():
+
+    def __init__(self, 
+                 target_dtes: list = [7,30,90]) -> None:
+        
+        self.target_dtes = target_dtes
+
+
+    def call_put_iv(self, QQQ: pd.DataFrame, daily: pd.DataFrame) -> pd.DataFrame:
+        """Find ATM straddle IVs (call and put) for each target DTE on each trade date.
+        
+        Calls find_atm_straddle_iv for each target DTE, which internally iterates over
+        all dates in daily to populate call_iv, put_iv columns (and _lower/_upper variants
+        if exact DTE not available)."""
+        
+        daily = daily.copy()
+
+        # Iterate over target DTEs
+        for target_dte in self.target_dtes:
+            daily = find_atm_straddle_iv(
+                QQQ=QQQ,
+                daily=daily,
+                target_dte=target_dte
+            )
+        
+        return daily
+    
+    def atm_straddle_iv(self, daily, dtes):
+        for dte in dtes:
+            daily[f'atm_straddle_iv_{dte}d'] = np.sqrt((daily[f'call_iv_{dte}d']**2 + daily[f'put_iv_{dte}d']**2)/2)
+        return daily
+        
+        
+    def build_features(self,
+                       QQQ: pd.DataFrame,
+                       daily: pd.DataFrame) -> pd.DataFrame:
+        
+        daily = self.call_put_iv(QQQ, daily)
+        daily = self.atm_straddle_iv(daily, self.target_dtes)
+
+        return daily
+
+def build_vol_features(QQQ: pd.DataFrame,
+                       daily: pd.DataFrame, 
+                       target_dtes = [7]) -> pd.DataFrame:
+
+    vol = vol_features(target_dtes = target_dtes)
+    return vol.build_features(QQQ = QQQ, daily = daily)
+
